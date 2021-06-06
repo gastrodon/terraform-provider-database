@@ -92,7 +92,14 @@ func resourceTableRead(ctx context.Context, data *schema.ResourceData, meta inte
 }
 
 func resourceTableDelete(ctx context.Context, data *schema.ResourceData, meta interface{}) diag.Diagnostics {
-	return nil
+	name := data.Get("name").(string)
+	log.Println("execute DROP TABLE " + name)
+
+	if err := meta.(Config).Connection.Exec("DROP TABLE " + name).Error; err != nil {
+		return diag.FromErr(err)
+	}
+
+	return resourceTableRead(ctx, data, meta)
 }
 
 func formatColumn(it map[string]interface{}) string {
