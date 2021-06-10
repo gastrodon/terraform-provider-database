@@ -2,16 +2,15 @@ package table
 
 import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
-	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
 var (
 	KINDS_INTEGER = []string{
-		"BIGINT",
 		"INT",
-		"MEDIUMINT",
-		"SMALLINT",
 		"TINYINT",
+		"SMALLINT",
+		"MEDIUMINT",
+		"BIGINT",
 	}
 	KINDS_FLOAT = []string{
 		"FLOAT",
@@ -19,16 +18,16 @@ var (
 		"DECIMAL",
 	}
 	KINDS_BLOB = []string{
-		"LONGBLOB",
 		"BLOB",
-		"MEDIUMBLOB",
 		"TINYBLOB",
+		"MEDIUMBLOB",
+		"LONGBLOB",
 	}
 	KINDS_TEXT = []string{
-		"LONGTEXT",
 		"TEXT",
-		"MEDIUMTEXT",
 		"TINYTEXT",
+		"MEDIUMTEXT",
+		"LONGTEXT",
 	}
 )
 
