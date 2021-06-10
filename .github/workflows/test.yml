@@ -24,3 +24,9 @@ jobs:
         run: go build .
       - name: Run tests
         run: go test ./... -count 1 -cover -coverprofile ./profile -coverpkg ./...
+      - name: Publish coverage
+        if: github.branch_name == 'master' && github.event_name == 'push'
+        uses: codecov/codecov-action@v1
+        with:
+          files: ./profile
+          fail_ci_if_error: true
