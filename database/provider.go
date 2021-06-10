@@ -7,45 +7,10 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
+
+	"github.com/gastrodon/terraform-provider-database/database/table"
+	"github.com/gastrodon/terraform-provider-database/database/types"
 )
-
-type Config struct {
-	Connection *gorm.DB
-}
-
-func Provider() *schema.Provider {
-	return &schema.Provider{
-		ConfigureFunc: configure,
-		ResourcesMap: map[string]*schema.Resource{
-			"database_table": resourceTable(),
-		},
-		DataSourcesMap: map[string]*schema.Resource{
-			"database_table": dataTable(),
-		},
-		Schema: map[string]*schema.Schema{
-			"username": {
-				Type:     schema.TypeString,
-				Required: true,
-			},
-			"password": {
-				Type:     schema.TypeString,
-				Optional: true,
-			},
-			"protocol": {
-				Type:     schema.TypeString,
-				Required: true,
-			},
-			"address": {
-				Type:     schema.TypeString,
-				Required: true,
-			},
-			"database": {
-				Type:     schema.TypeString,
-				Required: true,
-			},
-		},
-	}
-}
 
 func configure(data *schema.ResourceData) (interface{}, error) {
 	var connectionString string
@@ -80,5 +45,39 @@ func configure(data *schema.ResourceData) (interface{}, error) {
 		return nil, err
 	}
 
-	return Config{connection}, nil
+	return types.Config{connection}, nil
+}
+
+func Provider() *schema.Provider {
+	return &schema.Provider{
+		ConfigureFunc: configure,
+		ResourcesMap: map[string]*schema.Resource{
+			"database_table": table.Resource(),
+		},
+		DataSourcesMap: map[string]*schema.Resource{
+			"database_table": table.Data(),
+		},
+		Schema: map[string]*schema.Schema{
+			"username": {
+				Type:     schema.TypeString,
+				Required: true,
+			},
+			"password": {
+				Type:     schema.TypeString,
+				Optional: true,
+			},
+			"protocol": {
+				Type:     schema.TypeString,
+				Required: true,
+			},
+			"address": {
+				Type:     schema.TypeString,
+				Required: true,
+			},
+			"database": {
+				Type:     schema.TypeString,
+				Required: true,
+			},
+		},
+	}
 }
