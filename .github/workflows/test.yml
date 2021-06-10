@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Install dependencies
-        run: apk --no-cache add bash gcc git musl-dev
+        run: apk --no-cache add bash curl gcc git musl-dev
       - name: Check out the target branch
         uses: actions/checkout@v2
       - name: Get dependencies
