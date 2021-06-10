@@ -1,3 +1,4 @@
 modtest/*
 
 terraform-provider-database
+tflog
