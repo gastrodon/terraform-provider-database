@@ -31,13 +31,14 @@ func Resource() *schema.Resource {
 		ReadContext:   read,
 		UpdateContext: update,
 		Schema: map[string]*schema.Schema{
+			// TODO: follow the rest of the spec, add missing fields
+			// https://dev.mysql.com/doc/refman/8.0/en/create-table.html
 			"name": {
 				Type:     schema.TypeString,
 				Required: true,
 				ForceNew: true, // TODO We could technically get around this
 				// https://stackoverflow.com/questions/67093/how-do-i-quickly-rename-a-mysql-database-change-schema-name
 			},
-
 			"binary":  schemaOptionalColumn(schemaBinary()),
 			"bit":     schemaOptionalColumn(schemaBit()),
 			"blob":    schemaOptionalColumn(schemaBlob()),
