@@ -50,7 +50,6 @@ func schemaDefaultBool() map[string]*schema.Schema {
 			Type:     schema.TypeBool,
 			Optional: true,
 			Computed: true,
-			Default:  nil,
 		},
 	}
 }
@@ -61,7 +60,6 @@ func schemaDefaultFloat() map[string]*schema.Schema {
 			Type:     schema.TypeFloat,
 			Optional: true,
 			Computed: true,
-			Default:  nil,
 		},
 	}
 }
@@ -72,7 +70,6 @@ func schemaDefaultInt() map[string]*schema.Schema {
 			Type:     schema.TypeInt,
 			Optional: true,
 			Computed: true,
-			Default:  nil,
 		},
 	}
 }
@@ -84,7 +81,6 @@ func schemaDefaultSet(kind schema.ValueType) map[string]*schema.Schema {
 			Elem:     kind,
 			Optional: true,
 			Computed: true,
-			Default:  nil,
 		},
 	}
 }
@@ -95,7 +91,6 @@ func schemaDefaultString() map[string]*schema.Schema {
 			Type:     schema.TypeString,
 			Optional: true,
 			Computed: true,
-			Default:  nil,
 		},
 	}
 }
