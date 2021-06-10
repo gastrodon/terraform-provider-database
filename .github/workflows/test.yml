@@ -16,6 +16,8 @@ jobs:
     steps:
       - name: Install dependencies
         run: apk --no-cache add gcc musl-dev
+      - name: Alias ash
+        run: alias bash=ash
       - name: Check out the target branch
         uses: actions/checkout@v2
       - name: Get dependencies
