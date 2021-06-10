@@ -1,6 +1,8 @@
 package table
 
 import (
+	"log"
+
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
@@ -11,6 +13,7 @@ func merge(source ...map[string]*schema.Schema) map[string]*schema.Schema {
 		size += len(it)
 	}
 
+	log.Printf("Merging %d items: %#v", size, source)
 	collected := make(map[string]*schema.Schema, size)
 	for _, it := range source {
 		for key, value := range it {
@@ -18,6 +21,7 @@ func merge(source ...map[string]*schema.Schema) map[string]*schema.Schema {
 		}
 	}
 
+	log.Printf("Merged into %#v\n", collected)
 	return collected
 }
 
