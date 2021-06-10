@@ -15,9 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Install dependencies
-        run: apk --no-cache add gcc musl-dev
-      - name: Alias ash
-        run: alias bash=ash
+        run: apk --no-cache add bash gcc musl-dev
       - name: Check out the target branch
         uses: actions/checkout@v2
       - name: Get dependencies
