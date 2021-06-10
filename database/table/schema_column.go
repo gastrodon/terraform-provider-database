@@ -41,18 +41,10 @@ func schemaBinary() map[string]*schema.Schema {
 }
 
 func schemaBit() map[string]*schema.Schema {
-	it := map[string]*schema.Schema{
-		"size": {
-			Type:         schema.TypeInt,
-			Required:     true,
-			ValidateFunc: validation.IntBetween(1, 64),
-		},
-	}
-
 	return merge(
 		schemaColumn(),
 		schemaDefaultInt(),
-		it,
+		schemaSized(64),
 	)
 }
 
