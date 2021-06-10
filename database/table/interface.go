@@ -17,11 +17,44 @@ const (
 	TABLE_NOT_EXIST = "Error 1146:"
 )
 
+var (
+	columnKinds = []string{
+		"binary",
+		"bit",
+		"blob",
+		"boolean",
+		"char",
+		"enum",
+		"float",
+		"int",
+		"set",
+		"text",
+	}
+)
+
+func handleMaybeExisted(data *schema.ResourceData, err error) diag.Diagnostics {
+	if err == gorm.ErrRecordNotFound || strings.HasPrefix(err.Error(), TABLE_NOT_EXIST) {
+		log.Printf("Table %s doesn't exist\n", data.Get("name"))
+		data.SetId("")
+		return nil
+	}
+
+	return diag.FromErr(err)
+}
+
 func createTable(data *schema.ResourceData) string {
-	columnsRaw := data.Get("column").(*schema.Set)
-	columns := make([]string, columnsRaw.Len())
-	for index, it := range columnsRaw.List() {
-		columns[index] = columnMapString(it.(map[string]interface{}))
+	size := 0
+	for _, kind := range columnKinds {
+		size += data.Get(kind).(*schema.Set).Len()
+	}
+
+	index := 0
+	columns := make([]string, size)
+	for _, kind := range columnKinds {
+		for _, raw := range data.Get(kind).(*schema.Set).List() {
+			columns[index] = columnStatement(kind, raw.(map[string]interface{}))
+			index++
+		}
 	}
 
 	statement := fmt.Sprintf(
@@ -56,8 +89,7 @@ func create(ctx context.Context, data *schema.ResourceData, meta interface{}) di
 
 func delete(ctx context.Context, data *schema.ResourceData, meta interface{}) diag.Diagnostics {
 	if err := meta.(types.Config).Connection.Exec(dropTable(data.Get("name").(string))).Error; err != nil {
-		// TODO check for not exists here?
-		return diag.FromErr(err)
+		handleMaybeExisted(data, err)
 	}
 
 	return read(ctx, data, meta)
@@ -67,16 +99,10 @@ func read(ctx context.Context, data *schema.ResourceData, meta interface{}) diag
 	name := data.Get("name").(string)
 	columns := *new([]column)
 	if err := meta.(types.Config).Connection.Raw(describeTable(name)).Scan(&columns).Error; err != nil {
-		if err == gorm.ErrRecordNotFound || strings.HasPrefix(err.Error(), TABLE_NOT_EXIST) {
-			log.Printf("Table %s doesn't exist\n", name)
-			data.SetId("")
-			return nil
-		}
-
-		return diag.FromErr(err)
+		handleMaybeExisted(data, err)
 	}
 
-	data.Set("columns", columnMaps(columns))
+	data.Set("columns", schemaMaps(columns))
 	data.SetId("table_" + name)
 	return nil
 }
