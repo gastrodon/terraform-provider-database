@@ -1,0 +1,24 @@
+name: Unit Tests
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    types:
+      - opened
+      - synchronize
+
+jobs:
+  tests:
+    container: golang:alpine
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the target branch
+        uses: actions/checkout@v2
+      - name: Get dependencies
+        run: go get ./...
+      - name: Build the thing
+        run: go build .
+      - name: Run tests
+        run: go test ./... -count 1 -cover -coverprofile ./profile -coverpkg ./...
