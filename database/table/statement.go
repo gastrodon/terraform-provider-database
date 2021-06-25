@@ -54,9 +54,34 @@ func determineType(kind string, data map[string]interface{}) string {
 	panic("Can't find type for " + kind)
 }
 
-func determineDefault(data map[string]interface{}) string {
-	// TODO
-	return ""
+func determineDefault(kind string, data map[string]interface{}) string {
+	if value, ok := data["default"]; !ok || value == nil {
+		return ""
+	}
+
+	var defaultLiteral string
+	value := data["default"]
+
+	switch kind {
+	case "binary", "bit", "int":
+		defaultLiteral = fmt.Sprintf("%d", value.(int))
+	case "float":
+		defaultLiteral = fmt.Sprintf("%f", value.(float64))
+	case "boolean":
+		defaultLiteral = fmt.Sprintf("%t", value.(bool))
+	case "blob", "char", "enum", "text":
+		defaultLiteral = value.(string)
+	case "set":
+		set := value.(schema.Set)
+		items := make([]string, set.Len())
+		for index, it := range set.List() {
+			items[index] = it.(string)
+		}
+
+		defaultLiteral = strings.Join(items, ",")
+	}
+
+	return fmt.Sprintf("DEFAULT ('%s')", defaultLiteral)
 }
 
 func columnStatement(kind string, data map[string]interface{}) string {
@@ -74,7 +99,7 @@ func columnStatement(kind string, data map[string]interface{}) string {
 	}
 
 	if value, ok := data["default"]; ok && value != nil {
-		parts = append(parts, determineDefault(data))
+		parts = append(parts, determineDefault(kind, data))
 	}
 
 	if auto, ok := data["auto_increment"].(bool); ok && auto {
@@ -85,7 +110,7 @@ func columnStatement(kind string, data map[string]interface{}) string {
 		parts = append(parts, "PRIMARY KEY")
 	}
 
-	statement := strings.Join(parts, " ")
+	statement := strings.TrimSpace(strings.Join(parts, " "))
 	log.Printf("Generated column statement %s\n", statement)
 	return statement
 }

@@ -60,6 +60,78 @@ var (
 			},
 		},
 
+		// Default havers
+		{
+			"binlike BINARY(51) NULL DEFAULT ('42069')",
+			"binary",
+			map[string]interface{}{
+				"name":     "binlike",
+				"size":     51,
+				"variable": false,
+				"nullable": true,
+				"default":  42069,
+			},
+		},
+		{
+			"bitlike BIT(52) NULL DEFAULT ('69420')",
+			"bit",
+			map[string]interface{}{
+				"name":     "bitlike",
+				"size":     52,
+				"nullable": true,
+				"default":  69420,
+			},
+		},
+		{
+			"bloblike BLOB NULL DEFAULT ('say hello to bengis!')",
+			"blob",
+			map[string]interface{}{
+				"name":     "bloblike",
+				"kind":     "BLOB",
+				"nullable": true,
+				"default":  "say hello to bengis!",
+			},
+		},
+		{
+			"boollike BOOLEAN NOT NULL DEFAULT ('true')",
+			"boolean",
+			map[string]interface{}{
+				"name":     "boollike",
+				"nullable": false,
+				"default":  true,
+			},
+		},
+		{
+			"enumlike ENUM('bar', 'foo') NULL DEFAULT ('foo')",
+			"enum",
+			map[string]interface{}{
+				"name":     "enumlike",
+				"nullable": true,
+				"allowed":  *schema.NewSet(stringItemHash, []interface{}{"foo", "bar"}),
+				"default":  "foo",
+			},
+		},
+		{
+			"floatlike FLOAT NULL DEFAULT ('3.141500')",
+			"float",
+			map[string]interface{}{
+				"name":     "floatlike",
+				"nullable": true,
+				"kind":     "FLOAT",
+				"default":  3.141500,
+			},
+		},
+		{
+			"setlike SET('baz', 'bar', 'foo') NULL DEFAULT ('bar,foo')",
+			"set",
+			map[string]interface{}{
+				"name":     "setlike",
+				"nullable": true,
+				"allowed":  *schema.NewSet(stringItemHash, []interface{}{"bar", "baz", "foo"}),
+				"default":  *schema.NewSet(stringItemHash, []interface{}{"foo", "bar"}),
+			},
+		},
+
 		{
 			"bitlike BIT(24) NULL",
 			"bit",
@@ -399,7 +471,12 @@ func Test_columnStatement_generation(test *testing.T) {
 		generated := columnStatement(single.Kind, single.Data)
 
 		if generated != single.Column {
-			test.Fatalf("Incorrect column at %d!\n\t%s", index, generated)
+			test.Fatalf(
+				"Incorrect column at %d!\n have: %s \n want: %s ",
+				index,
+				generated,
+				single.Column,
+			)
 		}
 	}
 }
