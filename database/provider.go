@@ -13,7 +13,6 @@ import (
 )
 
 func configure(data *schema.ResourceData) (interface{}, error) {
-	var connectionString string
 	log.Printf(
 		"connecting to database/table %s://%s/%s\n",
 		data.Get("protocol"),
@@ -21,24 +20,20 @@ func configure(data *schema.ResourceData) (interface{}, error) {
 		data.Get("database"),
 	)
 
-	if _, ok := data.GetOk("password"); ok {
-		connectionString = fmt.Sprintf(
-			"%s:%s@%s(%s)/%s",
-			data.Get("username"),
-			data.Get("password"),
-			data.Get("protocol"),
-			data.Get("address"),
-			data.Get("database"),
-		)
+	var authString string
+	if password, ok := data.GetOk("password"); ok {
+		authString = data.Get("username").(string) + password.(string)
 	} else {
-		connectionString = fmt.Sprintf(
-			"%s@%s(%s)/%s",
-			data.Get("username"),
-			data.Get("protocol"),
-			data.Get("address"),
-			data.Get("database"),
-		)
+		authString = data.Get("username").(string)
 	}
+
+	connectionString := fmt.Sprintf(
+		"%s@%s(%s)/%s",
+		authString,
+		data.Get("protocol"),
+		data.Get("address"),
+		data.Get("database"),
+	)
 
 	connection, err := gorm.Open(mysql.Open(connectionString), &gorm.Config{})
 	if err != nil {
